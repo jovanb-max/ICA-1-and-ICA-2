@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-// require('dotenv').config();
+require('dotenv').config();
 const dotenv = require('dotenv');
 const pool = require('./db');
 
