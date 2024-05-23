@@ -3,22 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Book Library</title>
+  <title>Book Library Catalog</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div x-data="libraryApp()">
-    <div>
-      <input x-model="search" placeholder="Search books...">
-      <button @click="fetchBooks()">Search</button>
+  <h1>Book Library Catalog</h1>
+  <div id="library">
+    <h2>Browse Books</h2>
+    <div class="search-container">
+      <input type="text" id="search" placeholder="Search by title">
+      <button onclick="loadBooks()">Search</button>
     </div>
-    <ul>
-      <template x-for="book in books" :key="book.id">
-        <li x-text="`${book.title} by ${book.author}`"></li>
-      </template>
-    </ul>
+    <div id="books"></div>
   </div>
-  <script src="https://unpkg.com/alpinejs" defer></script>
-  <script src="app.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
