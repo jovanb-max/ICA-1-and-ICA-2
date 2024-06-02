@@ -142,6 +142,32 @@
     </header>
     
     <main>
+      <template x-if="user">
+        <div class="forms-container">
+          <div class="new-book-form">
+            <h2>Add a new book</h2>
+            <form @submit.prevent="addBook">
+              <input type="text" placeholder="Title" x-model="newBook.title" required>
+              <input type="text" placeholder="Author" x-model="newBook.author" required>
+              <input type="text" placeholder="Genre" x-model="newBook.genre" required>
+              <button type="submit">Add Book</button>
+            </form>
+          </div>
+
+          <template x-if="editBook.id">
+            <div class="edit-book-form">
+              <h2>Edit book</h2>
+              <form @submit.prevent="updateBook">
+                <input type="text" placeholder="Title" x-model="editBook.title" required>
+                <input type="text" placeholder="Author" x-model="editBook.author" required>
+                <input type="text" placeholder="Genre" x-model="editBook.genre" required>
+                <button type="submit">Update Book</button>
+              </form>
+            </div>
+          </template>
+        </div>
+      </template>
+
       <template x-if="loading">
         <p>Loading...</p>
       </template>
@@ -166,30 +192,6 @@
 
       <template x-if="!loading && books.length === 0">
         <p>No books found.</p>
-      </template>
-
-      <template x-if="user">
-        <div>
-          <h2>Add a new book</h2>
-          <form @submit.prevent="addBook">
-            <input type="text" placeholder="Title" x-model="newBook.title" required>
-            <input type="text" placeholder="Author" x-model="newBook.author" required>
-            <input type="text" placeholder="Genre" x-model="newBook.genre" required>
-            <button type="submit">Add Book</button>
-          </form>
-
-          <template x-if="editBook.id">
-            <div>
-              <h2>Edit book</h2>
-              <form @submit.prevent="updateBook">
-                <input type="text" placeholder="Title" x-model="editBook.title" required>
-                <input type="text" placeholder="Author" x-model="editBook.author" required>
-                <input type="text" placeholder="Genre" x-model="editBook.genre" required>
-                <button type="submit">Update Book</button>
-              </form>
-            </div>
-          </template>
-        </div>
       </template>
     </main>
   </div>
