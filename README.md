@@ -1,5 +1,5 @@
 # ICA-1 Book library
-Library application prototype
+Library application prototype.
 A basic web application that serves as a book library catalog. This application will consist of a
 REST API backend and a simple frontend interface. The application aims to cater to two types of
 users with different levels of access and capabilities.
@@ -18,4 +18,6 @@ author and genre (choose from a list of predefined genres).
 Add New Books (POST):
 Update Existing Books (PATCH): Modify information about books already in the catalog.
 Delete Books (DELETE): Remove books from the catalog that are no longer available or relevant.
+
+
 
