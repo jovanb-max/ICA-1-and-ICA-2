@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Library</title>
+  <link rel="stylesheet" href="search_bar.css">
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('bookLibrary', () => ({
+        searchQuery: '',
+        books: [],
+        loading: false,
+        user: null,
+        newBook: { title: '', author: '', genre: '' },
+        editBook: { id: '', title: '', author: '', genre: '' },
+
+        init() {
+          this.fetchBooks();
+          this.checkUser();
+        },
+
+        async searchBooks() {
+          this.loading = true;
+          try {
+            const response = await fetch(`http://localhost:3000/books?search=${this.searchQuery}`);
+            const data = await response.json();
+            this.books = data;
+          } catch (error) {
+            console.error("Error fetching books:", error);
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        async fetchBooks() {
+          this.loading = true;
+          try {
+            const response = await fetch('http://localhost:3000/books');
+            const data = await response.json();
+            this.books = data;
+          } catch (error) {
+            console.error("Error fetching books:", error);
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        checkUser() {
+          const token = localStorage.getItem('token');
+          if (token) {
+            this.user = 'User';  // Set a dummy user name for simplicity
+          }
+        },
+
+        logout() {
+          localStorage.removeItem('token');
+          this.user = null;
+          alert('Logged out');
+        },
+
+        async addBook() {
+          try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:3000/books', {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': ` ${token}`
+              },
+              body: JSON.stringify(this.newBook)
+            });
+            if (response.ok) {
+              this.newBook = { title: '', author: '', genre: '' };
+              this.fetchBooks();
+              alert('Book added successfully');
+            } else {
+              alert('Failed to add book');
+            }
+          } catch (error) {
+            console.error("Error adding book:", error);
+          }
+        },
+
+        async updateBook() {
+          try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:3000/books/${this.editBook.id}`, {
+              method: 'PATCH',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': ` ${token}`
+              },
+              body: JSON.stringify(this.editBook)
+            });
+            if (response.ok) {
+              this.editBook = { id: '', title: '', author: '', genre: '' };
+              this.fetchBooks();
+              alert('Book updated successfully');
+            } else {
+              alert('Failed to update book');
+            }
+          } catch (error) {
+            console.error("Error updating book:", error);
+          }
+        },
+
+        async deleteBook(id) {
+          try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:3000/books/${id}`, {
+              method: 'DELETE',
+              headers: { 'Authorization': ` ${token}` }
+            });
+            if (response.ok) {
+              this.fetchBooks();
+              alert('Book deleted successfully');
+            } else {
+              alert('Failed to delete book');
+            }
+          } catch (error) {
+            console.error("Error deleting book:", error);
+          }
+        }
+      }));
+    });
+  </script>
+</head>
+<body>
+  <div class="container" x-data="bookLibrary()">
+    <header>
+      <h1>Book Library</h1>
+      <input type="text" placeholder="Search for books..." x-model="searchQuery" @input="searchBooks">
+      <button @click="searchBooks">Search</button>
+      <template x-if="user">
+        <div>
+          <p>Welcome, <span x-text="user"></span></p>
+          <button @click="logout">Logout</button>
+        </div>
+      </template>
+    </header>
+    
+    <main>
+      <template x-if="loading">
+        <p>Loading...</p>
+      </template>
+
+      <template x-if="!loading && books.length > 0">
+        <ul>
+          <template x-for="book in books" :key="book.id">
+            <li>
+              <h2 x-text="book.title"></h2>
+              <p x-text="`Author: ${book.author}`"></p>
+              <p x-text="`Genre: ${book.genre}`"></p>
+              <template x-if="user">
+                <div>
+                  <button @click="editBook = { ...book }">Edit</button>
+                  <button @click="deleteBook(book.id)">Delete</button>
+                </div>
+              </template>
+            </li>
+          </template>
+        </ul>
+      </template>
+
+      <template x-if="!loading && books.length === 0">
+        <p>No books found.</p>
+      </template>
+
+      <template x-if="user">
+        <div>
+          <h2>Add a new book</h2>
+          <form @submit.prevent="addBook">
+            <input type="text" placeholder="Title" x-model="newBook.title" required>
+            <input type="text" placeholder="Author" x-model="newBook.author" required>
+            <input type="text" placeholder="Genre" x-model="newBook.genre" required>
+            <button type="submit">Add Book</button>
+          </form>
+
+          <template x-if="editBook.id">
+            <div>
+              <h2>Edit book</h2>
+              <form @submit.prevent="updateBook">
+                <input type="text" placeholder="Title" x-model="editBook.title" required>
+                <input type="text" placeholder="Author" x-model="editBook.author" required>
+                <input type="text" placeholder="Genre" x-model="editBook.genre" required>
+                <button type="submit">Update Book</button>
+              </form>
+            </div>
+          </template>
+        </div>
+      </template>
+    </main>
+  </div>
+</body>
+</html>
